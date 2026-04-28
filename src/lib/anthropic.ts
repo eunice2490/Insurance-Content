@@ -4,11 +4,24 @@ let client: Anthropic | null = null;
 
 export function getAnthropicClient(): Anthropic {
   if (!client) {
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) {
+    const token = process.env.ANTHROPIC_API_KEY;
+    if (!token) {
       throw new Error('ANTHROPIC_API_KEY environment variable is not set.');
     }
-    client = new Anthropic({ apiKey });
+    // Session ingress tokens (sk-ant-si-*) use OAuth Bearer auth
+    if (token.startsWith('sk-ant-si-')) {
+      client = new Anthropic({
+        apiKey: token,
+        fetch: (url: RequestInfo, init?: RequestInit) => {
+          const headers = new Headers(init?.headers);
+          headers.set('Authorization', `Bearer ${token}`);
+          headers.delete('x-api-key');
+          return fetch(url, { ...init, headers });
+        },
+      });
+    } else {
+      client = new Anthropic({ apiKey: token });
+    }
   }
   return client;
 }
