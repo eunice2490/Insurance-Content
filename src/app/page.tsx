@@ -6,6 +6,7 @@ import InputForm from '@/components/InputForm';
 import ContentCalendar from '@/components/ContentCalendar';
 import PostResult from '@/components/PostResult';
 import CreativeAsset from '@/components/CreativeAsset';
+import PostingPrep from '@/components/PostingPrep';
 import type {
   FormInputs,
   CalendarDay,
@@ -51,9 +52,10 @@ function buildExportText(
   if (creative) {
     if (creative.type === 'image') {
       lines.push('--- IMAGE PROMPT ---');
+      lines.push('(Paste this into Gemini [banana button] or Dreamina [Model 4.1])');
       lines.push(creative.image_prompt);
     } else {
-      lines.push('--- VIDEO SCRIPT ---');
+      lines.push('--- VIDEO SCRIPT (use in HeyGen) ---');
       lines.push(`HOOK (0-3s):\n${creative.script.hook}`);
       lines.push(`\nBODY (4-30s):\n${creative.script.body}`);
       lines.push(`\nCTA (31-45s):\n${creative.script.cta}`);
@@ -64,6 +66,12 @@ function buildExportText(
 }
 
 export default function Home() {
+  // Internal app steps:
+  // 1 = Configure form (pre-step)
+  // 2 = Calendar (diagram Step 1)
+  // 3 = Draft Post (diagram Step 2)
+  // 4 = Creative 3.1/3.2 (diagram Step 3)
+  // 5 = Post to Social Media (diagram Step 4)
   const [step, setStep] = useState<AppStep>(1);
   const [inputs, setInputs] = useState<FormInputs | null>(null);
   const [calendar, setCalendar] = useState<CalendarDay[] | null>(null);
@@ -147,6 +155,10 @@ export default function Home() {
     }
   }, [inputs, post]);
 
+  function handleProceedToPost() {
+    setStep(5);
+  }
+
   function handleExport(format: 'txt' | 'doc') {
     if (!inputs) return;
     const content = buildExportText(inputs, selectedDay, post, creative);
@@ -184,11 +196,12 @@ export default function Home() {
             AI Insurance Content Generator
           </h1>
           <p className="text-gray-500 mt-2 text-sm">
-            Generate a 7-day social media content calendar — from caption to creative — in minutes.
+            Follow the 4-step workflow to generate, create, and post your insurance content.
           </p>
         </div>
 
-        <StepIndicator currentStep={step} />
+        {/* Step indicator only shows once calendar is generated */}
+        {step >= 2 && <StepIndicator currentStep={step} />}
 
         {/* Error Banner */}
         {error && (
@@ -200,31 +213,41 @@ export default function Home() {
           </div>
         )}
 
-        {/* Step 1: Input Form */}
+        {/* Step 1 (pre): Input Form */}
         {step === 1 && (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-1">Step 1 — Configure Your Content</h2>
-            <p className="text-sm text-gray-500 mb-6">Fill in your preferences to generate a personalised content plan.</p>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-lg">
+                1
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">Generate 7-Day Content Calendar</h2>
+                <p className="text-xs text-gray-500">Configure your preferences to build a personalised plan</p>
+              </div>
+            </div>
             <InputForm onSubmit={handleGenerateCalendar} loading={loadingCalendar} />
           </div>
         )}
 
-        {/* Step 2: Calendar */}
+        {/* Step 2 (diagram Step 1): Calendar */}
         {step >= 2 && calendar && (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-4">
-            <div className="flex items-center justify-between mb-1">
-              <h2 className="text-lg font-bold text-gray-900">Step 2 — Your 7-Day Calendar</h2>
-              <button
-                onClick={handleReset}
-                className="text-xs text-gray-400 hover:text-gray-600 underline"
-              >
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold shrink-0">
+                  📅
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-gray-900">7-Day Content Calendar</h2>
+                  <p className="text-xs text-gray-500">
+                    {inputs?.insuranceTopic} · {inputs?.platform} · {inputs?.targetAudience}
+                  </p>
+                </div>
+              </div>
+              <button onClick={handleReset} className="text-xs text-gray-400 hover:text-gray-600 underline shrink-0">
                 Start over
               </button>
             </div>
-            <p className="text-sm text-gray-500 mb-4">
-              Topic: <span className="font-medium text-gray-700">{inputs?.insuranceTopic}</span> &nbsp;·&nbsp;
-              {inputs?.platform} &nbsp;·&nbsp; {inputs?.targetAudience}
-            </p>
             <ContentCalendar
               calendar={calendar}
               selectedDay={selectedDay?.day ?? null}
@@ -234,15 +257,20 @@ export default function Home() {
           </div>
         )}
 
-        {/* Step 3: Post Result */}
+        {/* Step 3 (diagram Step 2): Draft Post */}
         {step >= 3 && post && selectedDay && (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-4">
-            <h2 className="text-lg font-bold text-gray-900 mb-1">
-              Step 3 — Post for Day {selectedDay.day}: {selectedDay.theme}
-            </h2>
-            <p className="text-sm text-gray-500 mb-5">
-              Your generated caption and content pieces. Edit directly if needed before copying.
-            </p>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center text-white font-bold shrink-0">
+                ✍️
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">
+                  Draft Post — Day {selectedDay.day}: {selectedDay.theme}
+                </h2>
+                <p className="text-xs text-gray-500">Hook · Value · CTA · Full Caption · Hashtags</p>
+              </div>
+            </div>
             <PostResult
               post={post}
               onGenerateCreative={handleGenerateCreative}
@@ -252,27 +280,51 @@ export default function Home() {
           </div>
         )}
 
-        {/* Step 4: Creative Asset */}
-        {step >= 4 && creative && (
+        {/* Step 4 (diagram Step 3): Creative 3.1 / 3.2 */}
+        {step >= 4 && creative && inputs && (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-4">
-            <h2 className="text-lg font-bold text-gray-900 mb-1">
-              Step 4 — {creative.type === 'image' ? 'Image Prompt' : 'Video Script'}
-            </h2>
-            <p className="text-sm text-gray-500 mb-5">
-              {creative.type === 'image'
-                ? 'Use this prompt in any AI image generator to create your post visual.'
-                : 'Your complete short-video script — ready to film.'}
-            </p>
-            <CreativeAsset creative={creative} onExport={handleExport} />
-
-            <div className="mt-6 pt-5 border-t border-gray-100">
-              <button
-                onClick={handleReset}
-                className="w-full text-center text-sm text-gray-500 hover:text-blue-600 font-medium transition-colors"
-              >
-                Generate content for another topic →
-              </button>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-white font-bold shrink-0">
+                {creative.type === 'image' ? '🖼️' : '🎬'}
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">
+                  {creative.type === 'image'
+                    ? 'Step 3.1 — Generate Image Prompt'
+                    : 'Step 3.2 — Generate Video Script'}
+                </h2>
+                <p className="text-xs text-gray-500">
+                  {creative.type === 'image'
+                    ? 'Use in Gemini (banana button) or Dreamina (Model 4.1)'
+                    : 'Record yourself or generate with HeyGen'}
+                </p>
+              </div>
             </div>
+            <CreativeAsset creative={creative} onProceedToPost={handleProceedToPost} />
+          </div>
+        )}
+
+        {/* Step 5 (diagram Step 4): Post to Social Media */}
+        {step >= 5 && creative && post && inputs && (
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-4">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-xl bg-green-600 flex items-center justify-center text-white font-bold shrink-0">
+                🚀
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">Post to Social Media</h2>
+                <p className="text-xs text-gray-500">
+                  Follow the checklist to publish on {inputs.platform}
+                </p>
+              </div>
+            </div>
+            <PostingPrep
+              inputs={inputs}
+              post={post}
+              creative={creative}
+              onExport={handleExport}
+              onStartOver={handleReset}
+            />
           </div>
         )}
       </div>

@@ -5,7 +5,7 @@ import type { CreativeAsset as CreativeAssetType } from '@/types';
 
 interface Props {
   creative: CreativeAssetType;
-  onExport: (format: 'txt' | 'doc') => void;
+  onProceedToPost: () => void;
 }
 
 function CopyButton({ text, label }: { text: string; label: string }) {
@@ -41,7 +41,7 @@ function CopyButton({ text, label }: { text: string; label: string }) {
   );
 }
 
-export default function CreativeAsset({ creative, onExport }: Props) {
+export default function CreativeAsset({ creative, onProceedToPost }: Props) {
   if (creative.type === 'image') {
     return (
       <div className="space-y-4">
@@ -49,38 +49,52 @@ export default function CreativeAsset({ creative, onExport }: Props) {
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <span className="text-2xl">🖼️</span>
-              <span className="font-semibold text-amber-800">AI Image Prompt</span>
+              <div>
+                <p className="font-semibold text-amber-800">AI Image Prompt</p>
+                <p className="text-xs text-amber-600">Step 3.1 — Static Post</p>
+              </div>
             </div>
             <CopyButton text={creative.image_prompt} label="Copy Prompt" />
           </div>
           <p className="text-sm text-gray-700 leading-relaxed bg-white rounded-lg p-3 border border-amber-200">
             {creative.image_prompt}
           </p>
-          <p className="text-xs text-amber-600 mt-2">
-            Paste this prompt into Midjourney, DALL·E, or Adobe Firefly to generate your image.
-          </p>
         </div>
 
-        <div className="flex gap-3">
-          <button
-            onClick={() => onExport('txt')}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-gray-300 text-sm font-medium hover:bg-gray-50 transition-colors"
-          >
-            <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-            </svg>
-            Export .txt
-          </button>
-          <button
-            onClick={() => onExport('doc')}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-gray-300 text-sm font-medium hover:bg-gray-50 transition-colors"
-          >
-            <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            Export .doc
-          </button>
+        {/* Where to use */}
+        <div className="rounded-xl border border-gray-200 p-4">
+          <p className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3">Where to Create Your Image</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="rounded-lg bg-blue-50 border border-blue-100 p-3">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-base">✨</span>
+                <span className="text-sm font-semibold text-blue-800">Gemini</span>
+              </div>
+              <p className="text-xs text-blue-700">
+                Go to Gemini → activate the <strong>banana button</strong> → paste prompt → generate
+              </p>
+            </div>
+            <div className="rounded-lg bg-purple-50 border border-purple-100 p-3">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-base">🎨</span>
+                <span className="text-sm font-semibold text-purple-800">Dreamina</span>
+              </div>
+              <p className="text-xs text-purple-700">
+                Open Dreamina → choose <strong>Model 4.1</strong> → paste prompt → generate
+              </p>
+            </div>
+          </div>
         </div>
+
+        <button
+          onClick={onProceedToPost}
+          className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+          </svg>
+          Proceed to Post to Social Media →
+        </button>
       </div>
     );
   }
@@ -91,15 +105,18 @@ export default function CreativeAsset({ creative, onExport }: Props) {
   return (
     <div className="space-y-4">
       <div className="rounded-xl border border-violet-200 bg-violet-50 p-5">
-        <div className="flex items-center gap-2 mb-4">
+        <div className="flex items-center gap-2 mb-1">
           <span className="text-2xl">🎬</span>
-          <span className="font-semibold text-violet-800">Video Script</span>
+          <div>
+            <p className="font-semibold text-violet-800">Video Script</p>
+            <p className="text-xs text-violet-600">Step 3.2 — Reel</p>
+          </div>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-3 mt-4">
           <div className="bg-white rounded-lg p-3 border border-violet-200">
             <div className="flex items-center justify-between mb-1.5">
-              <span className="text-xs font-bold uppercase tracking-wider text-red-500">Hook · 0-3s</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-red-500">Hook · 0–3s</span>
               <CopyButton text={hook} label="Copy" />
             </div>
             <p className="text-sm text-gray-800">{hook}</p>
@@ -107,7 +124,7 @@ export default function CreativeAsset({ creative, onExport }: Props) {
 
           <div className="bg-white rounded-lg p-3 border border-violet-200">
             <div className="flex items-center justify-between mb-1.5">
-              <span className="text-xs font-bold uppercase tracking-wider text-blue-500">Body · 4-30s</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-blue-500">Body · 4–30s</span>
               <CopyButton text={body} label="Copy" />
             </div>
             <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">{body}</p>
@@ -115,7 +132,7 @@ export default function CreativeAsset({ creative, onExport }: Props) {
 
           <div className="bg-white rounded-lg p-3 border border-violet-200">
             <div className="flex items-center justify-between mb-1.5">
-              <span className="text-xs font-bold uppercase tracking-wider text-green-500">CTA · 31-45s</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-green-500">CTA · 31–45s</span>
               <CopyButton text={cta} label="Copy" />
             </div>
             <p className="text-sm text-gray-800">{cta}</p>
@@ -127,26 +144,29 @@ export default function CreativeAsset({ creative, onExport }: Props) {
         </div>
       </div>
 
-      <div className="flex gap-3">
-        <button
-          onClick={() => onExport('txt')}
-          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-gray-300 text-sm font-medium hover:bg-gray-50 transition-colors"
-        >
-          <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-          </svg>
-          Export .txt
-        </button>
-        <button
-          onClick={() => onExport('doc')}
-          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-gray-300 text-sm font-medium hover:bg-gray-50 transition-colors"
-        >
-          <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          Export .doc
-        </button>
+      {/* HeyGen tip */}
+      <div className="rounded-xl border border-gray-200 p-4">
+        <p className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3">Create Your AI Video</p>
+        <div className="rounded-lg bg-rose-50 border border-rose-100 p-3">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-base">🤖</span>
+            <span className="text-sm font-semibold text-rose-800">HeyGen</span>
+          </div>
+          <p className="text-xs text-rose-700">
+            Copy the full script → open <strong>HeyGen</strong> → create a new video → paste the script into the script editor → choose your AI avatar → generate your Reel.
+          </p>
+        </div>
       </div>
+
+      <button
+        onClick={onProceedToPost}
+        className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2"
+      >
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+        </svg>
+        Proceed to Post to Social Media →
+      </button>
     </div>
   );
 }
