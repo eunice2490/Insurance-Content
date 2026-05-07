@@ -9,7 +9,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Image prompt is required.' }, { status: 400 });
     }
 
-    // Use key from request body (user-provided) or fallback to env
     const key = apiKey?.trim() || process.env.OPENAI_API_KEY;
     if (!key) {
       return NextResponse.json(
@@ -20,24 +19,23 @@ export async function POST(req: NextRequest) {
 
     const openai = new OpenAI({ apiKey: key });
 
+    // gpt-image-1 (ChatGPT Image 2) — highest quality, most accurate to prompt
     const response = await openai.images.generate({
-      model: 'dall-e-3',
+      model: 'gpt-image-1',
       prompt,
       n: 1,
       size: '1024x1024',
-      quality: 'standard',
-      response_format: 'b64_json',
+      quality: 'high',
     });
 
+    // gpt-image-1 always returns b64_json
     const b64 = response.data?.[0]?.b64_json;
-    const revisedPrompt = response.data?.[0]?.revised_prompt ?? prompt;
 
-    if (!b64) throw new Error('No image returned from DALL-E.');
+    if (!b64) throw new Error('No image returned from gpt-image-1.');
 
-    return NextResponse.json({ imageB64: b64, revisedPrompt });
+    return NextResponse.json({ imageB64: b64, revisedPrompt: null });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
-    // Surface OpenAI specific errors clearly
     const clean = message.includes('Incorrect API key')
       ? 'Invalid OpenAI API key. Please check and try again.'
       : message;
