@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { CreativeAsset as CreativeAssetType } from '@/types';
+import ImageGenerator from '@/components/ImageGenerator';
 
 interface Props {
   creative: CreativeAssetType;
@@ -61,17 +62,20 @@ export default function CreativeAsset({ creative, onProceedToPost }: Props) {
           </p>
         </div>
 
-        {/* Where to use */}
+        {/* Generate image directly with DALL-E 3 */}
+        <ImageGenerator imagePrompt={creative.image_prompt} />
+
+        {/* Alternative external tools */}
         <div className="rounded-xl border border-gray-200 p-4">
-          <p className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3">Where to Create Your Image</p>
+          <p className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3">Or Generate Externally</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="rounded-lg bg-blue-50 border border-blue-100 p-3">
+            <div className="rounded-lg bg-indigo-50 border border-indigo-100 p-3">
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-base">✨</span>
-                <span className="text-sm font-semibold text-blue-800">Gemini</span>
+                <span className="text-sm font-semibold text-indigo-800">Gemini</span>
               </div>
-              <p className="text-xs text-blue-700">
-                Go to Gemini → activate the <strong>banana button</strong> → paste prompt → generate
+              <p className="text-xs text-indigo-700">
+                Activate the <strong>banana button</strong> → paste prompt → generate
               </p>
             </div>
             <div className="rounded-lg bg-purple-50 border border-purple-100 p-3">
@@ -80,7 +84,7 @@ export default function CreativeAsset({ creative, onProceedToPost }: Props) {
                 <span className="text-sm font-semibold text-purple-800">Dreamina</span>
               </div>
               <p className="text-xs text-purple-700">
-                Open Dreamina → choose <strong>Model 4.1</strong> → paste prompt → generate
+                Choose <strong>Model 4.1</strong> → paste prompt → generate
               </p>
             </div>
           </div>
