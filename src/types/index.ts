@@ -44,4 +44,4 @@ export interface VideoCreative {
 
 export type CreativeAsset = ImageCreative | VideoCreative;
 
-export type AppStep = 1 | 2 | 3 | 4 | 5;
+export type AppStep = 0 | 1 | 2 | 3 | 4 | 5;
