@@ -32,7 +32,7 @@ if not exist ".env.local" (
     copy .env.local.example .env.local >nul
     echo.
     echo  !! ACTION REQUIRED !!
-    echo  Open .env.local in Notepad and add your ANTHROPIC_API_KEY
+    echo  Open .env.local and add your ANTHROPIC_API_KEY
     echo  Then close this window and run start.bat again.
     echo.
     start notepad .env.local
@@ -40,13 +40,12 @@ if not exist ".env.local" (
     exit /b 0
 )
 
-:: Start the app
-echo  Starting app at http://localhost:3000
+:: Start the app on port 3500
+echo  Starting app at http://localhost:3500
 echo  Press Ctrl+C to stop the server.
 echo.
 
-:: Open browser after 4 seconds
-start /b cmd /c "timeout /t 4 >nul && start http://localhost:3000"
+start /b cmd /c "timeout /t 5 >nul && start http://localhost:3500"
 
-npm run dev
+npx next dev -p 3500
 pause
